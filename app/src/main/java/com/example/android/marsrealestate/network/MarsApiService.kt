@@ -17,12 +17,18 @@
 
 package com.example.android.marsrealestate.network
 
+import com.squareup.moshi.Moshi
+import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import retrofit2.Call
 import retrofit2.Retrofit
-import retrofit2.converter.scalars.ScalarsConverterFactory
+import retrofit2.converter.moshi.MoshiConverterFactory
 import retrofit2.http.GET
 
 private const val BASE_URL = "https://android-kotlin-fun-mars-server.appspot.com/"
+
+private val moshi = Moshi.Builder()
+    .add(KotlinJsonAdapterFactory()) //For Moshi's annotations to work properly with Kotlin
+    .build()
 
 /** Retrofit needs at least two things available to it to build a web services API:
  * the base URI for the web service, and a converter factory.
@@ -33,7 +39,7 @@ private const val BASE_URL = "https://android-kotlin-fun-mars-server.appspot.com
  * Finally, you call build() to create the Retrofit object.
  * */
 private val retrofit = Retrofit.Builder()
-    .addConverterFactory(ScalarsConverterFactory.create())
+    .addConverterFactory(MoshiConverterFactory.create(moshi))
     .baseUrl(BASE_URL)
     .build()
 
@@ -49,7 +55,7 @@ private val retrofit = Retrofit.Builder()
 interface MarsApiService {
     @GET("realestate")
     fun getProperties():
-            Call<String>
+            Call<List<MarsProperty>>
 }
 
 /** define a public object called MarsApi to initialize the Retrofit service.
